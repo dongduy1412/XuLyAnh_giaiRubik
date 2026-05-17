@@ -41,10 +41,8 @@ def _square_crop_from_bbox(image: np.ndarray, bbox: tuple[int, int, int, int], p
 
 def detect_face_crop(image: np.ndarray) -> np.ndarray:
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    hue, saturation, value = cv2.split(hsv)
-    color_mask = ((saturation > 45) & (value > 70)).astype(np.uint8) * 255
-    white_mask = ((saturation < 55) & (value > 120)).astype(np.uint8) * 255
-    mask = cv2.bitwise_or(color_mask, white_mask)
+    _, saturation, value = cv2.split(hsv)
+    mask = ((saturation > 80) & (value > 90)).astype(np.uint8) * 255
 
     min_dim = min(image.shape[:2])
     kernel_size = max(7, (min_dim // 35) | 1)

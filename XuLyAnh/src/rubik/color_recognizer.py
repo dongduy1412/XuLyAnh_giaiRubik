@@ -39,12 +39,52 @@ def extract_reference_colors(cells_by_face: dict[str, list[np.ndarray]]) -> dict
     return references
 
 
-def classify_cell(cell_hsv: np.ndarray, references: dict[str, np.ndarray]) -> tuple[str, float, float]:
-    distances = sorted((hsv_distance(cell_hsv, reference), face) for face, reference in references.items())
+def get_reference_distances(cell_hsv: np.ndarray, references: dict[str, np.ndarray]) -> dict[str, float]:
+    return {face: hsv_distance(cell_hsv, reference) for face, reference in references.items()}
+
+
+def classify_cell(cell_hsv: np.ndarray, references: dict[str, np.ndarray]) -> tuple[str, float, float, dict[str, float]]:
+    distance_by_face = get_reference_distances(cell_hsv, references)
+    distances = sorted((distance, face) for face, distance in distance_by_face.items())
     best_distance, best_face = distances[0]
     second_distance = distances[1][0] if len(distances) > 1 else best_distance
     confidence_gap = second_distance - best_distance
-    return best_face, best_distance, confidence_gap
+    return best_face, best_distance, confidence_gap, distance_by_face
+
+
+def rebalance_color_counts(
+    labels_by_face: dict[str, list[str]],
+    details_by_face: dict[str, list[dict]],
+) -> None:
+    counts = color_counts(labels_by_face)
+    while True:
+        over_faces = [face for face in FACE_ORDER if counts.get(face, 0) > 9]
+        under_faces = [face for face in FACE_ORDER if counts.get(face, 0) < 9]
+        if not over_faces or not under_faces:
+            return
+
+        candidates = []
+        for source_face in over_faces:
+            for image_face in FACE_ORDER:
+                for index, label in enumerate(labels_by_face[image_face]):
+                    if label != source_face or index == 4:
+                        continue
+                    distances = details_by_face[image_face][index]["distances"]
+                    for target_face in under_faces:
+                        penalty = distances[target_face] - distances[source_face]
+                        candidates.append((penalty, image_face, index, source_face, target_face))
+
+        if not candidates:
+            return
+
+        _, image_face, index, source_face, target_face = min(candidates, key=lambda item: item[0])
+        labels_by_face[image_face][index] = target_face
+        detail = details_by_face[image_face][index]
+        detail["label"] = target_face
+        detail["rebalanced_from"] = source_face
+        detail["distance"] = round(detail["distances"][target_face], 3)
+        counts[source_face] -= 1
+        counts[target_face] += 1
 
 
 def recognize_faces(cells_by_face: dict[str, list[np.ndarray]]) -> tuple[dict[str, list[str]], dict[str, list[dict[str, float | str]]]]:
@@ -57,17 +97,19 @@ def recognize_faces(cells_by_face: dict[str, list[np.ndarray]]) -> tuple[dict[st
         details = []
         for index, cell in enumerate(cells_by_face[face]):
             cell_hsv = get_mean_hsv(cell)
-            label, distance, confidence_gap = classify_cell(cell_hsv, references)
+            label, distance, confidence_gap, distance_by_face = classify_cell(cell_hsv, references)
             labels.append(label)
             details.append({
                 "index": index,
                 "label": label,
                 "distance": round(distance, 3),
                 "confidence_gap": round(confidence_gap, 3),
+                "distances": {key: round(value, 3) for key, value in distance_by_face.items()},
             })
         labels_by_face[face] = labels
         details_by_face[face] = details
 
+    rebalance_color_counts(labels_by_face, details_by_face)
     return labels_by_face, details_by_face
 
 

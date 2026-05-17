@@ -39,8 +39,8 @@ def draw_unfolded_cube(labels_by_face: dict[str, list[str]], cell_size: int = 70
     face_images = {face: draw_face(labels_by_face[face], cell_size) for face in FACE_ORDER}
     face_side = next(iter(face_images.values())).shape[0]
     margin = 12
-    canvas_height = face_side * 4 + margin * 5
-    canvas_width = face_side * 3 + margin * 4
+    canvas_height = face_side * 3 + margin * 4
+    canvas_width = face_side * 4 + margin * 5
     canvas = np.full((canvas_height, canvas_width, 3), 245, dtype=np.uint8)
 
     positions = {
@@ -48,8 +48,8 @@ def draw_unfolded_cube(labels_by_face: dict[str, list[str]], cell_size: int = 70
         "L": (0, 1),
         "F": (1, 1),
         "R": (2, 1),
+        "B": (3, 1),
         "D": (1, 2),
-        "B": (1, 3),
     }
     for face, (grid_x, grid_y) in positions.items():
         x0 = margin + grid_x * (face_side + margin)

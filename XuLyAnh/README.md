@@ -51,11 +51,33 @@ Lưu ý chụp ảnh:
 python -m pip install -r requirements.txt
 ```
 
-## Chạy demo
+## Chạy demo bằng dòng lệnh
 
 ```powershell
-python src/rubik_main.py --U data/rubik_samples/U.jpg --R data/rubik_samples/R.jpg --F data/rubik_samples/F.jpg --D data/rubik_samples/D.jpg --L data/rubik_samples/L.jpg --B data/rubik_samples/B.jpg --output results/rubik
+python src/rubik_main.py --U data/U.jpg --R data/R.jpg --F data/F.jpg --D data/D.jpg --L data/L.jpg --B data/B.jpg --output results/rubik --auto-orient
 ```
+
+## Chạy web app để điện thoại chụp/upload ảnh
+
+Laptop và điện thoại cần cùng mạng Wi-Fi.
+
+```powershell
+python -m streamlit run src/rubik_app.py --server.address 0.0.0.0
+```
+
+Lấy IPv4 laptop bằng:
+
+```powershell
+ipconfig
+```
+
+Sau đó mở trên điện thoại:
+
+```text
+http://<IPv4-laptop>:8501
+```
+
+Upload/chụp lần lượt 6 mặt theo nhãn F, U, D, L, R, B rồi bấm nhận diện và giải Rubik.
 
 Kết quả:
 
