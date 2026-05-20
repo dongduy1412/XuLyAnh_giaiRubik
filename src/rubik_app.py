@@ -7,7 +7,7 @@ import cv2
 from PIL import Image, ImageOps
 import streamlit as st
 
-from rubik.color_profile import build_center_cell_profile, load_reference_profile, profile_to_json
+from rubik.color_profile import load_reference_profile, profile_to_json
 from rubik.color_recognizer import classify_cell, color_counts, get_mean_lab, validate_color_counts
 from rubik.face_detector import draw_grid, split_face_into_cells
 from rubik.image_processor import load_face_image, preprocess_face
@@ -52,48 +52,66 @@ def save_uploaded_face(face: str, uploaded_file: object) -> Path:
     return path
 
 
-def get_runtime_references(exclude_face: str | None = None) -> tuple[dict[str, object], int]:
-    references = load_reference_profile()
-    captured_cells = {
-        face: result["cells"]
-        for face, result in st.session_state["face_results"].items()
-        if face != exclude_face and "cells" in result
-    }
-    if captured_cells:
-        captured_references = build_center_cell_profile(captured_cells)
-        references.update(captured_references)
-    return references, len(captured_cells)
+def get_palette_to_face(exclude_face: str | None = None) -> dict[str, str]:
+    mapping = {}
+    for face, result in st.session_state["face_results"].items():
+        if face == exclude_face:
+            continue
+        center_palette = result.get("center_palette")
+        if isinstance(center_palette, str):
+            mapping[center_palette] = face
+    return mapping
 
 
-def recognize_single_face(face: str, image_path: Path, size: int, equalize: bool, auto_crop: bool, references: dict[str, object]) -> dict[str, object]:
+def get_runtime_references(exclude_face: str | None = None) -> tuple[dict[str, object], dict[str, str], int]:
+    palette = load_reference_profile()
+    palette_to_face = get_palette_to_face(exclude_face)
+    return palette, palette_to_face, len(palette_to_face)
+
+
+
+
+def recognize_single_face(
+    face: str,
+    image_path: Path,
+    size: int,
+    equalize: bool,
+    auto_crop: bool,
+    palette: dict[str, object],
+    palette_to_face: dict[str, str],
+) -> dict[str, object]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     image = load_face_image(image_path)
     face_image = preprocess_face(image, size=size, equalize=equalize, auto_crop=auto_crop)
     cells = split_face_into_cells(face_image)
 
-    # Key insight: center cell (index 4) of this face IS the reference color
-    # for this face label. Override the reference before classifying other cells.
     center_lab = get_mean_lab(cells[4])
-    updated_references = dict(references)
-    updated_references[face] = center_lab
+    center_palette, _, _, _ = classify_cell(center_lab, palette)
+    updated_palette_to_face = dict(palette_to_face)
+    updated_palette_to_face[center_palette] = face
 
     labels = []
+    palette_labels = []
     details = []
     for index, cell in enumerate(cells):
         lab = get_mean_lab(cell)
-        label, distance, confidence_gap, distances = classify_cell(lab, updated_references)
+        palette_label, distance, confidence_gap, distances = classify_cell(lab, palette)
+        label = updated_palette_to_face.get(palette_label, palette_label)
         labels.append(label)
+        palette_labels.append(palette_label)
         details.append({
             "index": index,
             "label": label,
+            "palette": palette_label,
             "distance": round(distance, 3),
             "confidence_gap": round(confidence_gap, 3),
             "distances": {key: round(value, 3) for key, value in distances.items()},
         })
 
-    # Force center cell to always be labeled as its face (center is fixed on Rubik 3x3)
     labels[4] = face
+    palette_labels[4] = center_palette
     details[4]["label"] = face
+    details[4]["palette"] = center_palette
 
     debug_dir = OUTPUT_DIR / "debug_faces"
     debug_dir.mkdir(parents=True, exist_ok=True)
@@ -105,29 +123,43 @@ def recognize_single_face(face: str, image_path: Path, size: int, equalize: bool
         "image_path": str(image_path),
         "debug_path": str(debug_path),
         "labels": labels,
+        "palette_labels": palette_labels,
+        "center_palette": center_palette,
         "details": details,
-        "references": profile_to_json(updated_references),
+        "references": profile_to_json(palette),
         "cells": cells,
     }
 
 
+def color_map_from_palette_mapping(palette: dict[str, object], palette_to_face: dict[str, str]) -> dict[str, tuple[int, int, int]]:
+    references = dict(palette)
+    references.update({
+        face: palette[color_key]
+        for color_key, face in palette_to_face.items()
+        if face in FACE_ORDER and color_key in palette
+    })
+    return build_color_map_from_references(references)
+
+
 def get_current_color_map() -> dict[str, tuple[int, int, int]]:
-    """Build a color map from all currently stored face results."""
-    import numpy as np
-    all_refs = {}
-    for face, result in st.session_state.get("face_results", {}).items():
-        refs = result.get("references", {})
-        if face in refs:
-            all_refs[face] = np.array(refs[face], dtype=np.float32)
-    # Also merge static reference for faces not yet captured
     try:
-        static_refs = load_reference_profile()
-        for face in FACE_ORDER:
-            if face not in all_refs and face in static_refs:
-                all_refs[face] = static_refs[face]
+        return color_map_from_palette_mapping(load_reference_profile(), get_palette_to_face())
     except Exception:
-        pass
-    return build_color_map_from_references(all_refs)
+        return build_color_map_from_references({})
+
+
+def color_map_from_result(result: dict[str, object]) -> dict[str, tuple[int, int, int]]:
+    import numpy as np
+    palette = {
+        color_key: np.array(values, dtype=np.float32)
+        for color_key, values in result.get("references", {}).items()
+    }
+    palette_to_face = get_palette_to_face(exclude_face=result.get("face"))
+    center_palette = result.get("center_palette")
+    face = result.get("face")
+    if isinstance(center_palette, str) and face in FACE_ORDER:
+        palette_to_face[center_palette] = face
+    return color_map_from_palette_mapping(palette, palette_to_face)
 
 
 def render_face_image(labels: list[str], color_map: dict | None = None) -> None:
@@ -156,7 +188,8 @@ def render_slot(face: str) -> None:
     result = st.session_state["face_results"].get(face)
     st.markdown(f"**{face} - {FACE_LABELS[face]}**")
     if result:
-        render_face_image(result["labels"])
+        render_face_image(result["labels"], get_current_color_map())
+        st.caption(f"Palette tâm: {result.get('center_palette', '-')}")
         if st.button("Sửa mặt", key=f"edit_{face}", use_container_width=True):
             open_face_page(face)
     else:
@@ -188,16 +221,33 @@ def render_cube_layout() -> None:
         render_slot("D")
 
 
-def render_face_correction(face: str, labels: list[str]) -> None:
+def render_palette_legend(palette_keys: list[str], color_map: dict) -> None:
+    """Show a color legend so users know what each palette key looks like."""
+    cols = st.columns(len(palette_keys))
+    for col, key in zip(cols, palette_keys):
+        bgr = color_map.get(key, (128, 128, 128))
+        r, g, b = bgr[2], bgr[1], bgr[0]
+        with col:
+            st.markdown(
+                f'<div style="background:rgb({r},{g},{b});color:{"#000" if (r*0.299+g*0.587+b*0.114)>140 else "#fff"};'
+                f'text-align:center;padding:6px;border-radius:6px;font-weight:bold;">{key}</div>',
+                unsafe_allow_html=True,
+            )
+
+
+def render_face_correction(face: str, palette_labels: list[str], palette_keys: list[str]) -> None:
+    """Render correction selectboxes using palette keys as options."""
     for row in range(3):
         cols = st.columns(3, gap="small")
         for col in range(3):
             index = row * 3 + col
+            current = palette_labels[index]
+            selected_index = palette_keys.index(current) if current in palette_keys else 0
             with cols[col]:
                 st.selectbox(
                     f"{face}{index + 1}",
-                    options=FACE_ORDER,
-                    index=FACE_ORDER.index(labels[index]),
+                    options=palette_keys,
+                    index=selected_index,
                     key=f"pending_{face}_{index}",
                     label_visibility="collapsed",
                 )
@@ -210,22 +260,32 @@ def read_pending_labels(face: str) -> list[str]:
 def render_pending_result(face: str, result: dict[str, object]) -> None:
     st.divider()
     st.subheader("Kết quả nhận diện")
+    cmap = color_map_from_result(result)
     left, right = st.columns(2)
     with left:
         st.caption("Ảnh đã crop và kẻ lưới")
         st.image(result["debug_path"], use_container_width=True)
     with right:
         st.caption("Màu nhận diện")
-        render_face_image(result["labels"])
+        palette_labels = result.get("palette_labels", result["labels"])
+        render_face_image(palette_labels, cmap)
+
+    palette_keys = sorted(result.get("references", {}).keys())
+    center_palette = result.get("center_palette", palette_labels[4] if len(palette_labels) > 4 else "-")
+    st.info(f"Ô giữa = {center_palette} → gán mặt {face}. Nếu màu sai, sửa trong lưới bên dưới.")
 
     st.subheader("Sửa màu nếu nhận diện sai")
+    render_palette_legend(palette_keys, cmap)
     with st.form(f"confirm_{face}"):
-        render_face_correction(face, result["labels"])
+        render_face_correction(face, palette_labels, palette_keys)
         submitted = st.form_submit_button("Thêm vào layout", use_container_width=True)
 
     if submitted:
         corrected = deepcopy(result)
-        corrected["labels"] = read_pending_labels(face)
+        corrected_palette = read_pending_labels(face)
+        corrected["labels"] = corrected_palette
+        corrected["palette_labels"] = corrected_palette
+        corrected["center_palette"] = corrected_palette[4] if len(corrected_palette) > 4 else center_palette
         st.session_state["face_results"][face] = corrected
         go_home()
 
@@ -234,7 +294,7 @@ def render_pending_result(face: str, result: dict[str, object]) -> None:
         for detail in result["details"]:
             rows.append({
                 "Ô": detail["index"] + 1,
-                "Nhãn": detail["label"],
+                "Palette": detail.get("palette", detail["label"]),
                 "Khoảng cách": detail["distance"],
                 "Confidence gap": detail["confidence_gap"],
             })
@@ -257,7 +317,7 @@ def render_face_page() -> None:
         st.header("Tùy chọn nhận diện")
         size = st.slider("Kích thước chuẩn hóa", min_value=300, max_value=900, value=600, step=100)
         equalize = st.checkbox("Cân bằng sáng CLAHE", value=False)
-        auto_crop = st.checkbox("Tự crop mặt Rubik", value=True)
+        auto_crop = st.checkbox("Tự cắt viền mặt Rubik", value=True)
 
     uploaded_file = st.file_uploader("Upload ảnh", type=["jpg", "jpeg", "png"], key=f"upload_{face}")
     camera_file = st.camera_input("Hoặc chụp ảnh", key=f"camera_{face}")
@@ -269,8 +329,8 @@ def render_face_page() -> None:
         if st.button("Nhận diện màu", type="primary", use_container_width=True):
             try:
                 image_path = save_uploaded_face(face, selected_file)
-                references, captured_count = get_runtime_references(exclude_face=face)
-                st.session_state["pending_result"] = recognize_single_face(face, image_path, size, equalize, auto_crop, references)
+                palette, palette_to_face, captured_count = get_runtime_references(exclude_face=face)
+                st.session_state["pending_result"] = recognize_single_face(face, image_path, size, equalize, auto_crop, palette, palette_to_face)
                 st.session_state["pending_reference_count"] = captured_count
                 st.rerun()
             except Exception as error:
@@ -284,10 +344,19 @@ def render_face_page() -> None:
 
 
 def labels_from_layout() -> dict[str, list[str]]:
-    return {
-        face: st.session_state["face_results"][face]["labels"]
-        for face in FACE_ORDER
-    }
+    """Convert stored palette labels to face labels using center cell mapping.
+
+    This only works correctly when all 6 faces have been uploaded,
+    because it needs all 6 center palette->face mappings.
+    """
+    palette_to_face = get_palette_to_face()
+    result = {}
+    for face in FACE_ORDER:
+        stored = st.session_state["face_results"][face]["labels"]
+        face_labels = [palette_to_face.get(label, label) for label in stored]
+        face_labels[4] = face  # enforce center
+        result[face] = face_labels
+    return result
 
 
 def find_solvable_orientation(labels_by_face: dict[str, list[str]]) -> tuple[dict[str, list[str]], dict[str, int], str]:
@@ -330,7 +399,7 @@ def render_solver_panel() -> None:
             solution = solve_cube(state)
             moves = parse_solution(solution)
             output_path = OUTPUT_DIR / "detected_cube_final.png"
-            save_unfolded_cube(output_path, labels_by_face)
+            save_unfolded_cube(output_path, labels_by_face, color_map=get_current_color_map())
 
             st.success("Trạng thái Rubik hợp lệ")
             st.image(str(output_path), caption="Layout cuối cùng", use_container_width=True)

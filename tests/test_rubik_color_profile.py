@@ -46,8 +46,8 @@ def test_assign_samples_to_faces_matches_standard_cube_colors() -> None:
     assert np.allclose(profile["B"], samples[5])
 
 
-def test_build_reference_profile_returns_all_faces(monkeypatch, tmp_path) -> None:
-    image_paths = [tmp_path / f"face_{index}.jpg" for index in range(len(FACE_ORDER))]
+def test_build_reference_profile_returns_palette_without_face_binding(monkeypatch, tmp_path) -> None:
+    image_paths = [tmp_path / f"color_{index}.jpg" for index in range(len(FACE_ORDER))]
     samples = {
         image_paths[0]: np.array([17.0, 235.0, 228.0], dtype=np.float32),
         image_paths[1]: np.array([2.0, 240.0, 240.0], dtype=np.float32),
@@ -58,15 +58,11 @@ def test_build_reference_profile_returns_all_faces(monkeypatch, tmp_path) -> Non
     }
 
     monkeypatch.setattr("rubik.color_profile._collect_calibration_images", lambda calibration_dir: image_paths)
-    monkeypatch.setattr("rubik.color_profile._sample_hsv", lambda path: samples[path])
     monkeypatch.setattr("rubik.color_profile._sample_lab", lambda path: samples[path])
 
     profile = build_reference_profile(tmp_path)
 
-    assert list(profile) == FACE_ORDER
-    assert profile["U"]["source"] == str(image_paths[3])
-    assert profile["R"]["source"] == str(image_paths[1])
-    assert profile["F"]["source"] == str(image_paths[2])
-    assert profile["D"]["source"] == str(image_paths[5])
-    assert profile["L"]["source"] == str(image_paths[0])
-    assert profile["B"]["source"] == str(image_paths[4])
+    assert list(profile) == ["C1", "C2", "C3", "C4", "C5", "C6"]
+    for index, color_key in enumerate(profile):
+        assert profile[color_key]["source"] == str(image_paths[index])
+        assert profile[color_key]["lab"] == [float(value) for value in samples[image_paths[index]]]

@@ -1,0 +1,60 @@
+[U]
+{'index': 0, 'label': 'B', 'distance': 82.394, 'confidence_gap': 51.19, 'distances': {'U': 145.736, 'R': 173.973, 'F': 151.821, 'D': 190.333, 'L': 133.584, 'B': 82.394}}
+{'index': 1, 'label': 'F', 'distance': 5.226, 'confidence_gap': 30.145, 'distances': {'U': 123.595, 'R': 35.371, 'F': 5.226, 'D': 50.874, 'L': 60.576, 'B': 67.54}}
+{'index': 2, 'label': 'L', 'distance': 16.419, 'confidence_gap': 53.858, 'distances': {'U': 98.69, 'R': 72.23, 'F': 70.277, 'D': 112.079, 'L': 16.419, 'B': 71.657}}
+{'index': 3, 'label': 'R', 'distance': 11.8, 'confidence_gap': 28.202, 'distances': {'U': 156.798, 'R': 11.8, 'F': 40.002, 'D': 46.628, 'L': 69.154, 'B': 108.611}}
+{'index': 4, 'label': 'U', 'distance': 0.0, 'confidence_gap': 100.53, 'distances': {'U': 0.0, 'R': 150.603, 'F': 127.125, 'D': 130.076, 'L': 100.98, 'B': 100.53}}
+{'index': 5, 'label': 'L', 'distance': 5.693, 'confidence_gap': 56.441, 'distances': {'U': 100.609, 'R': 62.134, 'F': 63.524, 'D': 103.315, 'L': 5.693, 'B': 75.434}}
+{'index': 6, 'label': 'R', 'distance': 13.24, 'confidence_gap': 27.99, 'distances': {'U': 157.641, 'R': 13.24, 'F': 41.23, 'D': 46.758, 'L': 70.442, 'B': 110.07}}
+{'index': 7, 'label': 'D', 'distance': 3.013, 'confidence_gap': 46.962, 'distances': {'U': 130.99, 'R': 50.854, 'F': 49.976, 'D': 3.013, 'L': 101.003, 'B': 109.581}}
+{'index': 8, 'label': 'L', 'distance': 4.005, 'confidence_gap': 58.162, 'distances': {'U': 99.466, 'R': 62.168, 'F': 64.044, 'D': 103.119, 'L': 4.005, 'B': 75.923}}
+[R]
+{'index': 0, 'label': 'B', 'distance': 65.421, 'confidence_gap': 22.416, 'distances': {'U': 105.506, 'R': 50.32, 'F': 22.451, 'D': 44.867, 'L': 76.74, 'B': 65.421}, 'rebalanced_from': 'F'}
+{'index': 1, 'label': 'B', 'distance': 91.493, 'confidence_gap': 49.654, 'distances': {'U': 153.053, 'R': 182.442, 'F': 160.485, 'D': 199.383, 'L': 141.147, 'B': 91.493}}
+{'index': 2, 'label': 'F', 'distance': 8.413, 'confidence_gap': 29.557, 'distances': {'U': 122.846, 'R': 37.97, 'F': 8.413, 'D': 54.396, 'L': 59.818, 'B': 65.072}}
+{'index': 3, 'label': 'U', 'distance': 10.199, 'confidence_gap': 85.493, 'distances': {'U': 10.199, 'R': 144.097, 'F': 124.081, 'D': 126.147, 'L': 95.692, 'B': 102.392}}
+{'index': 4, 'label': 'R', 'distance': 0.0, 'confidence_gap': 30.938, 'distances': {'U': 150.603, 'R': 0.0, 'F': 30.938, 'D': 49.387, 'L': 59.065, 'B': 97.606}}
+{'index': 5, 'label': 'L', 'distance': 9.226, 'confidence_gap': 57.135, 'distances': {'U': 98.643, 'R': 66.361, 'F': 66.716, 'D': 107.058, 'L': 9.226, 'B': 74.442}}
+{'index': 6, 'label': 'D', 'distance': 15.462, 'confidence_gap': 20.728, 'distances': {'U': 119.388, 'R': 46.187, 'F': 36.19, 'D': 15.462, 'L': 90.15, 'B': 92.623}}
+{'index': 7, 'label': 'D', 'distance': 12.172, 'confidence_gap': 27.22, 'distances': {'U': 121.377, 'R': 47.194, 'F': 39.391, 'D': 12.172, 'L': 92.319, 'B': 95.989}}
+{'index': 8, 'label': 'D', 'distance': 29.085, 'confidence_gap': 3.179, 'distances': {'U': 112.643, 'R': 45.263, 'F': 25.906, 'D': 29.085, 'L': 82.859, 'B': 80.077}, 'rebalanced_from': 'F'}
+[F]
+{'index': 0, 'label': 'F', 'distance': 13.521, 'confidence_gap': 28.194, 'distances': {'U': 121.489, 'R': 41.715, 'F': 13.521, 'D': 59.108, 'L': 57.489, 'B': 60.192}}
+{'index': 1, 'label': 'B', 'distance': 38.785, 'confidence_gap': 51.843, 'distances': {'U': 123.011, 'R': 128.16, 'F': 107.508, 'D': 143.374, 'L': 90.628, 'B': 38.785}}
+{'index': 2, 'label': 'U', 'distance': 51.14, 'confidence_gap': 39.382, 'distances': {'U': 51.14, 'R': 158.286, 'F': 132.916, 'D': 138.777, 'L': 145.375, 'B': 90.522}}
+{'index': 3, 'label': 'U', 'distance': 48.383, 'confidence_gap': 53.397, 'distances': {'U': 48.383, 'R': 129.636, 'F': 102.005, 'D': 101.78, 'L': 101.846, 'B': 102.263}}
+{'index': 4, 'label': 'F', 'distance': 0.0, 'confidence_gap': 30.938, 'distances': {'U': 127.125, 'R': 30.938, 'F': 0.0, 'D': 47.64, 'L': 61.64, 'B': 72.695}}
+{'index': 5, 'label': 'F', 'distance': 5.831, 'confidence_gap': 25.045, 'distances': {'U': 125.554, 'R': 30.876, 'F': 5.831, 'D': 44.479, 'L': 61.825, 'B': 72.2}}
+{'index': 6, 'label': 'L', 'distance': 70.77, 'confidence_gap': 0.392, 'distances': {'U': 70.378, 'R': 125.128, 'F': 124.052, 'D': 156.287, 'L': 70.77, 'B': 97.921}, 'rebalanced_from': 'U'}
+{'index': 7, 'label': 'U', 'distance': 8.623, 'confidence_gap': 84.275, 'distances': {'U': 8.623, 'R': 150.106, 'F': 121.661, 'D': 126.031, 'L': 109.539, 'B': 92.898}}
+{'index': 8, 'label': 'F', 'distance': 9.894, 'confidence_gap': 20.757, 'distances': {'U': 125.103, 'R': 30.651, 'F': 9.894, 'D': 38.183, 'L': 67.509, 'B': 77.116}}
+[D]
+{'index': 0, 'label': 'D', 'distance': 29.086, 'confidence_gap': 5.137, 'distances': {'U': 114.709, 'R': 43.242, 'F': 23.949, 'D': 29.086, 'L': 82.092, 'B': 81.015}, 'rebalanced_from': 'F'}
+{'index': 1, 'label': 'F', 'distance': 4.299, 'confidence_gap': 26.505, 'distances': {'U': 126.356, 'R': 30.805, 'F': 4.299, 'D': 43.679, 'L': 65.436, 'B': 75.535}}
+{'index': 2, 'label': 'L', 'distance': 18.093, 'confidence_gap': 50.139, 'distances': {'U': 100.44, 'R': 73.199, 'F': 69.796, 'D': 111.873, 'L': 18.093, 'B': 68.232}}
+{'index': 3, 'label': 'U', 'distance': 4.902, 'confidence_gap': 94.19, 'distances': {'U': 4.902, 'R': 153.057, 'F': 128.11, 'D': 132.724, 'L': 102.41, 'B': 99.092}}
+{'index': 4, 'label': 'D', 'distance': 0.0, 'confidence_gap': 47.64, 'distances': {'U': 130.076, 'R': 49.387, 'F': 47.64, 'D': 0.0, 'L': 99.761, 'B': 107.996}}
+{'index': 5, 'label': 'F', 'distance': 13.925, 'confidence_gap': 11.804, 'distances': {'U': 131.543, 'R': 25.729, 'F': 13.925, 'D': 35.532, 'L': 70.355, 'B': 85.179}}
+{'index': 6, 'label': 'B', 'distance': 77.563, 'confidence_gap': 52.622, 'distances': {'U': 140.982, 'R': 170.197, 'F': 148.109, 'D': 185.451, 'L': 130.185, 'B': 77.563}}
+{'index': 7, 'label': 'R', 'distance': 18.825, 'confidence_gap': 25.948, 'distances': {'U': 161.86, 'R': 18.825, 'F': 45.211, 'D': 44.773, 'L': 75.95, 'B': 114.693}}
+{'index': 8, 'label': 'R', 'distance': 6.984, 'confidence_gap': 27.759, 'distances': {'U': 155.613, 'R': 6.984, 'F': 34.743, 'D': 47.496, 'L': 65.504, 'B': 103.614}}
+[L]
+{'index': 0, 'label': 'R', 'distance': 19.098, 'confidence_gap': 3.623, 'distances': {'U': 142.24, 'R': 19.098, 'F': 22.722, 'D': 59.369, 'L': 44.708, 'B': 80.745}}
+{'index': 1, 'label': 'B', 'distance': 82.598, 'confidence_gap': 51.754, 'distances': {'U': 145.116, 'R': 174.458, 'F': 152.16, 'D': 190.555, 'L': 134.352, 'B': 82.598}}
+{'index': 2, 'label': 'U', 'distance': 18.022, 'confidence_gap': 79.965, 'distances': {'U': 18.022, 'R': 156.699, 'F': 131.302, 'D': 139.85, 'L': 103.89, 'B': 97.987}}
+{'index': 3, 'label': 'U', 'distance': 5.002, 'confidence_gap': 94.379, 'distances': {'U': 5.002, 'R': 151.272, 'F': 127.103, 'D': 131.548, 'L': 100.894, 'B': 99.381}}
+{'index': 4, 'label': 'L', 'distance': 0.0, 'confidence_gap': 59.065, 'distances': {'U': 100.98, 'R': 59.065, 'F': 61.64, 'D': 99.761, 'L': 0.0, 'B': 76.039}}
+{'index': 5, 'label': 'F', 'distance': 5.447, 'confidence_gap': 24.301, 'distances': {'U': 126.506, 'R': 29.748, 'F': 5.447, 'D': 42.556, 'L': 64.095, 'B': 75.077}}
+{'index': 6, 'label': 'L', 'distance': 5.979, 'confidence_gap': 49.408, 'distances': {'U': 102.019, 'R': 55.387, 'F': 60.357, 'D': 97.926, 'L': 5.979, 'B': 80.392}}
+{'index': 7, 'label': 'L', 'distance': 2.521, 'confidence_gap': 57.47, 'distances': {'U': 99.174, 'R': 59.992, 'F': 63.16, 'D': 100.49, 'L': 2.521, 'B': 77.095}}
+{'index': 8, 'label': 'R', 'distance': 4.757, 'confidence_gap': 23.231, 'distances': {'U': 148.595, 'R': 4.757, 'F': 27.988, 'D': 51.657, 'L': 55.468, 'B': 93.634}}
+[B]
+{'index': 0, 'label': 'U', 'distance': 23.449, 'confidence_gap': 77.223, 'distances': {'U': 23.449, 'R': 154.137, 'F': 133.164, 'D': 142.45, 'L': 100.867, 'B': 100.672}}
+{'index': 1, 'label': 'B', 'distance': 47.833, 'confidence_gap': 13.804, 'distances': {'U': 61.638, 'R': 100.02, 'F': 70.009, 'D': 89.143, 'L': 106.128, 'B': 47.833}}
+{'index': 2, 'label': 'R', 'distance': 26.431, 'confidence_gap': 2.427, 'distances': {'U': 139.829, 'R': 26.431, 'F': 24.004, 'D': 65.337, 'L': 40.682, 'B': 75.831}, 'rebalanced_from': 'F'}
+{'index': 3, 'label': 'D', 'distance': 28.257, 'confidence_gap': 0.58, 'distances': {'U': 112.744, 'R': 45.56, 'F': 27.677, 'D': 28.257, 'L': 82.331, 'B': 79.934}, 'rebalanced_from': 'F'}
+{'index': 4, 'label': 'B', 'distance': 0.0, 'confidence_gap': 72.695, 'distances': {'U': 100.53, 'R': 97.606, 'F': 72.695, 'D': 107.996, 'L': 76.039, 'B': 0.0}}
+{'index': 5, 'label': 'B', 'distance': 90.257, 'confidence_gap': 48.621, 'distances': {'U': 153.597, 'R': 180.752, 'F': 159.127, 'D': 198.103, 'L': 138.878, 'B': 90.257}}
+{'index': 6, 'label': 'R', 'distance': 24.259, 'confidence_gap': 11.524, 'distances': {'U': 131.532, 'R': 24.259, 'F': 12.735, 'D': 36.987, 'L': 66.07, 'B': 82.197}, 'rebalanced_from': 'F'}
+{'index': 7, 'label': 'D', 'distance': 22.308, 'confidence_gap': 4.156, 'distances': {'U': 125.971, 'R': 34.702, 'F': 26.464, 'D': 22.308, 'L': 79.042, 'B': 88.587}}
+{'index': 8, 'label': 'D', 'distance': 20.12, 'confidence_gap': 11.472, 'distances': {'U': 117.858, 'R': 44.195, 'F': 31.592, 'D': 20.12, 'L': 86.311, 'B': 88.044}}

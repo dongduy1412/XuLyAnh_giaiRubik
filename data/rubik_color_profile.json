@@ -1,54 +1,55 @@
 {
-  "version": 2,
+  "version": 3,
   "space": "LAB",
-  "faces": {
-    "U": {
+  "type": "palette",
+  "colors": {
+    "C1": {
       "lab": [
-        229.6168865869199,
-        126.75323714391416,
-        131.67394253298804
+        214.47404432544994,
+        131.4071471069463,
+        211.85043879220586
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398572365_b8f93da71a1716b2d4543426f9af98f5.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875558647_6dad3d568945dc941def47a6f336636d.jpg"
     },
-    "R": {
+    "C2": {
       "lab": [
-        156.37120935330654,
-        194.53464864206552,
-        139.1345755693582
+        163.79012450481042,
+        177.1717883418223,
+        199.29816072439164
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398560910_71ea6d83b2aa6e38fa4b8981d933e876.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875562601_b9c79a82114aae47a3c58e98620719c7.jpg"
     },
-    "F": {
+    "C3": {
       "lab": [
-        208.37314333796738,
-        79.05652301163386,
-        207.23042730665105
+        66.29794499286025,
+        176.6684050412864,
+        155.42652262991245
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398542717_9aa58b133506abf6e7016866b8c7ab59.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875567142_866663064a5c96c1fc8f8bbafc8f8185.jpg"
     },
-    "D": {
+    "C4": {
       "lab": [
-        216.16119075970468,
-        119.868120981186,
-        212.44871636103835
+        161.08477011494253,
+        63.75577978056426,
+        189.84326018808778
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398556162_d42a4e08d4d00fbc4d778a7788c94f4a.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875567307_7d344c0f3b2f9bd3875161d6d819e2ed.jpg"
     },
-    "L": {
+    "C5": {
       "lab": [
-        152.726567752224,
-        189.55647972983536,
-        197.37646378261752
+        237.35544217687075,
+        128.0,
+        128.00185528756958
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398535909_c1e942b4304b7d52675026b692defb19.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875568290_63970f69613aa17fe0c8a7c6c64e3ac4.jpg"
     },
-    "B": {
+    "C6": {
       "lab": [
-        154.23754478250046,
-        117.45729562403264,
-        94.05593618426037
+        78.18300798580302,
+        173.23025732031942,
+        50.55678793256433
       ],
-      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7845398572075_86d7e272e65b8dd8616688280b3491b3.jpg"
+      "source": "F:\\XLA_demdoituong\\XuLyAnh1\\Color\\z7847875569400_088359de99e4db266c999fb7129cc51e.jpg"
     }
   }
 }

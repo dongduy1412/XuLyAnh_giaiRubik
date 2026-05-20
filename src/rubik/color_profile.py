@@ -44,8 +44,8 @@ def build_center_cell_profile(cells_by_face: dict[str, list[np.ndarray]]) -> dic
 
 def profile_to_json(profile: dict[str, np.ndarray]) -> dict[str, list[float]]:
     return {
-        face: [float(value) for value in profile[face]]
-        for face in FACE_ORDER
+        key: [float(value) for value in value]
+        for key, value in profile.items()
     }
 
 
@@ -125,27 +125,14 @@ def _collect_calibration_images(calibration_dir: Path) -> list[Path]:
 def build_reference_profile(calibration_dir: str | Path = DEFAULT_CALIBRATION_DIR) -> dict[str, dict[str, object]]:
     calibration_dir = Path(calibration_dir)
     image_paths = _collect_calibration_images(calibration_dir)
-    samples_hsv = [_sample_hsv(path) for path in image_paths]
     samples_lab = [_sample_lab(path) for path in image_paths]
 
-    remaining = set(range(len(FACE_ORDER)))
-    assignment: dict[str, int] = {}
-
-    for face in ["U", "D", "F", "B", "L"]:
-        sample_index = min(remaining, key=lambda index: _sample_cost(samples_hsv[index], face))
-        assignment[face] = sample_index
-        remaining.remove(sample_index)
-
-    if len(remaining) != 1:
-        raise ValueError("Unable to build a reference profile")
-    assignment["R"] = remaining.pop()
-
     return {
-        face: {
-            "lab": [float(value) for value in samples_lab[assignment[face]]],
-            "source": str(image_paths[assignment[face]]),
+        f"C{index + 1}": {
+            "lab": [float(value) for value in sample],
+            "source": str(image_paths[index]),
         }
-        for face in FACE_ORDER
+        for index, sample in enumerate(samples_lab)
     }
 
 
@@ -153,7 +140,7 @@ def save_reference_profile(profile: dict[str, dict[str, object]], profile_path: 
     profile_path = Path(profile_path)
     profile_path.parent.mkdir(parents=True, exist_ok=True)
     with profile_path.open("w", encoding="utf-8") as file:
-        json.dump({"version": 2, "space": "LAB", "faces": profile}, file, ensure_ascii=False, indent=2)
+        json.dump({"version": 3, "space": "LAB", "type": "palette", "colors": profile}, file, ensure_ascii=False, indent=2)
     return profile_path
 
 
@@ -185,13 +172,19 @@ def load_reference_profile(
         with profile_path.open("r", encoding="utf-8") as file:
             payload = json.load(file)
 
-    if _profile_is_stale(profile_path, calibration_dir) or payload is None or payload.get("version") != 2 or payload.get("space") != "LAB":
+    if (
+        _profile_is_stale(profile_path, calibration_dir)
+        or payload is None
+        or payload.get("version") != 3
+        or payload.get("space") != "LAB"
+        or payload.get("type") != "palette"
+    ):
         profile = build_reference_profile(calibration_dir)
         save_reference_profile(profile, profile_path)
     else:
-        profile = payload["faces"]
+        profile = payload["colors"]
 
     return {
-        face: np.array(profile[face]["lab"], dtype=np.float32)
-        for face in FACE_ORDER
+        color_key: np.array(profile[color_key]["lab"], dtype=np.float32)
+        for color_key in profile
     }

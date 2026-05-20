@@ -179,16 +179,54 @@ def _detect_by_connected_region(image: np.ndarray) -> np.ndarray:
     if not scored_regions:
         return center_square_crop(image)
     _, best_contour = max(scored_regions, key=lambda item: item[0])
+    x, y, width, height = cv2.boundingRect(best_contour)
+    area_ratio = (width * height) / (image_shape[0] * image_shape[1])
+    if area_ratio < 0.25:
+        return center_square_crop(image)
     return _warp_square_from_contour(image, best_contour)
 
 
+def _detect_by_dark_border(image: np.ndarray) -> np.ndarray:
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blur_size = max(5, (min(image.shape[:2]) // 120) | 1)
+    blurred = cv2.GaussianBlur(gray, (blur_size, blur_size), 0)
+    _, mask = cv2.threshold(blurred, 95, 255, cv2.THRESH_BINARY_INV)
+    kernel_size = max(7, (min(image.shape[:2]) // 45) | 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    image_shape = image.shape[:2]
+    best_contour = None
+    best_score = 0.0
+    for contour in contours:
+        bbox = cv2.boundingRect(contour)
+        score = _score_rubik_region(bbox, image_shape)
+        if score > best_score:
+            best_score = score
+            best_contour = contour
+
+    if best_contour is None:
+        return center_square_crop(image)
+
+    x, y, width, height = cv2.boundingRect(best_contour)
+    area_ratio = (width * height) / (image_shape[0] * image_shape[1])
+    if area_ratio < 0.08:
+        return center_square_crop(image)
+    return _square_crop_from_bbox(image, (x, y, width, height), padding_ratio=0.03)
+
+
 def detect_face_crop(image: np.ndarray) -> np.ndarray:
+    border_crop = _detect_by_dark_border(image)
+    if border_crop.shape[0] < image.shape[0] or border_crop.shape[1] < image.shape[1]:
+        return border_crop
+
     mask = _build_sticker_mask(image, close=False)
     sticker_bboxes = _find_sticker_bboxes(mask, image.shape[:2])
     sticker_cluster = _cluster_sticker_bboxes(sticker_bboxes)
     if len(sticker_cluster) >= 6:
-        roi = _square_crop_from_bbox(image, _union_bboxes(sticker_cluster), padding_ratio=0.06)
-        return _detect_by_connected_region(roi)
+        return _square_crop_from_bbox(image, _union_bboxes(sticker_cluster), padding_ratio=0.06)
     return _detect_by_connected_region(image)
 
 
